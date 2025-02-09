@@ -29,13 +29,13 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T: PartialOrd + Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T: PartialOrd + Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -69,14 +69,36 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+    pub fn merge(list_a: LinkedList<T>, list_b: LinkedList<T>) -> Self
 	{
 		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+        //合并A和B有序的链表
+        let mut cur_a = list_a.start;
+        let mut cur_b = list_b.start;
+        let mut merge_list = LinkedList::<T>::new();
+
+
+        while let (Some(ref mut node_a), Some(ref mut node_b)) = (cur_a, cur_b) {
+            if unsafe{ (*node_a.as_ptr()).val <= (*node_b.as_ptr()).val} {
+                merge_list.add(unsafe{ (*node_a.as_ptr()).val.clone()});
+                cur_a = unsafe{ (*node_a.as_ptr()).next};
+            } else {
+                merge_list.add(unsafe{ (*node_b.as_ptr()).val.clone()});
+                cur_b = unsafe{ (*node_b.as_ptr()).next};
+            }
         }
+
+        while let Some(ref mut node_a) = cur_a {
+            merge_list.add(unsafe{ (*node_a.as_ptr()).val.clone()});
+            cur_a = unsafe{ (*node_a.as_ptr()).next};
+        }
+
+        while let Some(ref mut node_b) = cur_b {
+            merge_list.add(unsafe{ (*node_b.as_ptr()).val.clone()});
+            cur_b = unsafe{ (*node_b.as_ptr()).next};
+        }
+
+		merge_list
 	}
 }
 
@@ -103,6 +125,7 @@ where
         }
     }
 }
+
 
 #[cfg(test)]
 mod tests {
