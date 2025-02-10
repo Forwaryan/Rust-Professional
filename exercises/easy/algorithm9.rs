@@ -38,6 +38,19 @@ where
 
     pub fn add(&mut self, value: T) {
         //TODO
+        self.count += 1;
+        if self.count >= self.items.len() {
+            self.items.push(value);
+        } else {
+            self.items[self.count] = value;
+        }
+
+        let mut idx = self.count;
+        while idx > 1 && (self.comparator)(&self.items[idx], &self.items[self.parent_idx(idx)]) {
+            let parent_idx = self.parent_idx(idx);
+            self.items.swap(idx, parent_idx);
+            idx = self.parent_idx(idx);
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -58,7 +71,42 @@ where
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
         //TODO
-		0
+		let letf_idx = self.left_child_idx(idx);
+        let right_idx = self.right_child_idx(idx);
+
+        if right_idx <= self.count && (self.comparator)(&self.items[right_idx], &self.items[letf_idx]) {
+            right_idx
+        } else {
+            letf_idx
+        }
+    }
+
+    fn bubble_down(&mut self, idx: usize) {
+        //TODO
+        let mut cur_idx = idx;
+        while self.children_present(cur_idx) {
+            let smallest_child_idx = self.smallest_child_idx(cur_idx);
+            if (self.comparator)(&self.items[smallest_child_idx], &self.items[cur_idx]) {
+                self.items.swap(smallest_child_idx, cur_idx);
+                cur_idx = smallest_child_idx;
+            } else {
+                break;
+            }
+        }
+    }
+
+    fn pop(&mut self) -> Option<T> {
+        //TODO
+        if self.count == 0 {
+            return None;
+        }
+
+        self.items.swap(1, self.count);
+        self.count -= 1;
+        self.bubble_down(1);
+       
+       
+        Some(self.items.pop().unwrap())
     }
 }
 
@@ -85,7 +133,7 @@ where
 
     fn next(&mut self) -> Option<T> {
         //TODO
-		None
+		self.pop()
     }
 }
 

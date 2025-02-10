@@ -28,8 +28,29 @@ impl Graph for UndirectedGraph {
     fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>> {
         &self.adjacency_table
     }
+
+    fn add_node(&mut self, node: &str) -> bool {
+        if self.adjacency_table.contains_key(node) {
+            return false;
+        }
+        self.adjacency_table.insert(String::from(node), Vec::new());
+        true
+    }
+
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
         //TODO
+        let (node1, node2, weight) = edge;
+        self.add_node(node1);
+        self.add_node(node2);
+
+        if let Some(nxt) = self.adjacency_table.get_mut(node1) {
+            nxt.push((String::from(node2), weight));
+        }
+
+        if let Some(nxt) = self.adjacency_table.get_mut(node2) {
+            nxt.push((String::from(node1), weight));
+        }
+        
     }
 }
 pub trait Graph {
