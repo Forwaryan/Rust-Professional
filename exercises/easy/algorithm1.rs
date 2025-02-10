@@ -78,7 +78,7 @@ impl<T: PartialOrd + Clone> LinkedList<T> {
         let mut merge_list = LinkedList::<T>::new();
 
 
-        while let (Some(ref mut node_a), Some(ref mut node_b)) = (cur_a, cur_b) {
+        while let (Some(node_a), Some(node_b)) = (cur_a, cur_b) {
             if unsafe{ (*node_a.as_ptr()).val <= (*node_b.as_ptr()).val} {
                 merge_list.add(unsafe{ (*node_a.as_ptr()).val.clone()});
                 cur_a = unsafe{ (*node_a.as_ptr()).next};
